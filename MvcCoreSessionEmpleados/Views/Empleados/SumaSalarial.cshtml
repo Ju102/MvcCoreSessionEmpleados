@@ -1,0 +1,18 @@
+﻿<div class="container">
+    <h2>Suma Salarial de Session</h2>
+
+    @if (Context.Session.GetString("sumasalarial") != null)
+    {
+        <div class="container py-3 text-center bg-success-subtle text-success border border-1 border-success rounded-3">
+            <h5>Salario almacenado: @Context.Session.GetString("sumasalarial") €</h5>
+        </div>
+    }
+    else
+    {
+        <div class="container my-4 py-3 text-center bg-danger-subtle text-danger border border-1 border-danger rounded-3">
+            <h5>No hay salarios almacenados en Session</h5>
+        </div>
+    }
+
+    <a asp-action="SessionSalarios">Volver a la Lista</a>
+</div>

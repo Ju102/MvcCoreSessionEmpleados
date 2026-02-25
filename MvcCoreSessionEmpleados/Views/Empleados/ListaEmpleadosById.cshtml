@@ -1,0 +1,40 @@
+﻿@model List<Empleado>
+
+<div class="container">
+    <h2 class="text-success">Lista de Empleados por ID en Session</h2>
+
+    @if (Model != null && Model.Count != 0)
+    {
+        <div class="container">
+            <table class="table table-success table-bordered">
+                <thead>
+                    <tr>
+                        <th>Apellido</th>
+                        <th>Salario</th>
+                        <th>Oficio</th>
+                        <th>ID Departamento</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (Empleado empleado in Model)
+                    {
+                        <tr>
+                            <td>@empleado.Apellido</td>
+                            <td>@empleado.Salario.ToString("n0") €</td>
+                            <td>@empleado.Oficio</td>
+                            <td>@empleado.IdDepartamento</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="container my-4 py-3 text-center bg-danger-subtle text-danger border border-1 border-danger rounded-3">
+            <h5>No hay empleados almacenados en Session</h5>
+        </div>
+    }
+
+    <a asp-action="SessionEmpleadosById">Volver a la Lista</a>
+</div>

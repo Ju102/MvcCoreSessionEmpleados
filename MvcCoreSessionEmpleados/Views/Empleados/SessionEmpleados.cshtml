@@ -1,0 +1,28 @@
+﻿@model List<Empleado>
+
+<div class="container">
+    <h2 class="text-danger">Session Empleados</h2>
+    @if (Model != null && Model.Count != 0)
+    {
+        <table class="table table-primary table-bordered">
+            <thead>
+                <tr>
+                    <th>Apellido</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Empleado empleado in Model)
+                {
+                    <tr>
+                        <td>@empleado.Apellido</td>
+                        <td><a class="btn btn-success" asp-action="SessionEmpleados" asp-route-idempleado="@empleado.IdEmpleado">Almacenar</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+<div class="container">
+    <a asp-action="ListaEmpleados">Mostrar Lista Almacenada</a>
+</div>

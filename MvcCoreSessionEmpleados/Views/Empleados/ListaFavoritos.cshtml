@@ -1,0 +1,42 @@
+﻿@{
+    List<Empleado> favEmpleados = memoryCache.Get<List<Empleado>>("favoritos");
+}
+
+<div class="container">
+    <h2 class="text-danger">Lista de Favoritos <3 </h2>
+
+    @if (favEmpleados != null && favEmpleados.Count != 0)
+    {
+        <div class="container">
+            <table class="table table-danger table-bordered">
+                <thead>
+                    <tr>
+                        <th>Apellido</th>
+                        <th>Salario</th>
+                        <th>Oficio</th>
+                        <th>ID Departamento</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (Empleado empleado in favEmpleados)
+                    {
+                        <tr>
+                            <td>@empleado.Apellido</td>
+                            <td>@empleado.Salario.ToString("n0") €</td>
+                            <td>@empleado.Oficio</td>
+                            <td>@empleado.IdDepartamento</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="container my-4 py-3 text-center bg-danger-subtle text-danger border border-1 border-danger rounded-3">
+            <h5>No hay empleados favoritos almacenados en Cache</h5>
+        </div>
+    }
+
+    <a asp-action="SessionEmpleadosV5">Volver a la Lista</a>
+</div>

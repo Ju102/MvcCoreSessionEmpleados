@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using MvcCoreSessionEmpleados.Extensions;
 using MvcCoreSessionEmpleados.Models;
 using MvcCoreSessionEmpleados.Repositories;
@@ -8,11 +9,13 @@ namespace MvcCoreSessionEmpleados.Controllers
 {
     public class EmpleadosController : Controller
     {
-        private RepositoryEmpleados repo;
+        private readonly RepositoryEmpleados repo;
+        private readonly IMemoryCache memoryCache;
 
-        public EmpleadosController(RepositoryEmpleados repo)
+        public EmpleadosController(RepositoryEmpleados repo, IMemoryCache memoryCache)
         {
             this.repo = repo;
+            this.memoryCache = memoryCache;
         }
 
         public IActionResult Index()
@@ -151,6 +154,92 @@ namespace MvcCoreSessionEmpleados.Controllers
                 empleados = await this.repo.GetEmpleadosSessionAsync(empleadosIds);
             }
             return View(empleados);
+        }
+
+
+        public async Task<IActionResult> SessionEmpleadosV5(int? idempleado, int? idfavorito)
+        {
+            // Parte de Cache
+            if (idfavorito != null)
+            {
+                // Como estoy almacenando en Cache, vamos a guardar directamente los objetos en lugar de los ids
+                List<Empleado> favEmpleados;
+                if (this.memoryCache.Get("favoritos") == null)
+                {
+                    favEmpleados = new List<Empleado>();
+                }
+                else
+                {
+                    favEmpleados = this.memoryCache.Get<List<Empleado>>("favoritos");
+                }
+                // Buscamos al empleado para guardarlo
+                Empleado emp = await this.repo.FindEmpleadoAsync(idfavorito.Value);
+                favEmpleados.Add(emp);
+                this.memoryCache.Set("favoritos", favEmpleados);
+
+            }
+            //----------------------------
+
+            if (idempleado != null)
+            {
+
+                //ALMACENAMOS LO MINIMO...
+                List<int> idsEmpleadosList;
+                if (HttpContext.Session.GetObject<List<int>>
+                    ("idsempleadosv5") != null)
+                {
+                    //RECUPERAMOS LA COLECCION
+                    idsEmpleadosList =
+                        HttpContext.Session.GetObject<List<int>>("idsempleadosv5");
+                }
+                else
+                {
+                    //CREAMOS LA COLECCION
+                    idsEmpleadosList = new List<int>();
+                }
+                //ALMACENAMOS EL ID DEL EMPLEADO
+                idsEmpleadosList.Add(idempleado.Value);
+                //ALMACENAMOS EN SESSION LOS DATOS
+                HttpContext.Session.SetObject("idsempleadosv5", idsEmpleadosList);
+            }
+            List<Empleado> empleados = await this.repo.GetEmpleadosAsync();
+            return View(empleados);
+        }
+
+        public async Task<IActionResult> ListaEmpleadosV5(int? idempleado)
+        {
+            //RECUPERAMOS LA COLECCION DE SESSION
+            List<int> idsEmpleados =
+                HttpContext.Session.GetObject<List<int>>("idsempleadosv5");
+            if (idsEmpleados == null)
+            {
+                return View();
+            }
+            else
+            {
+                // Preguntamos si hemos recibido algun dato para eliminar
+                if (idempleado != null)
+                {
+                    idsEmpleados.Remove(idempleado.Value);
+                    if (idsEmpleados.Count == 0)
+                    {
+                        HttpContext.Session.Remove("idsempleadosv5");
+                    }
+                    else
+                    {
+                        HttpContext.Session.SetObject("idsempleadosv5", idsEmpleados);
+                    }
+                }
+
+                List<Empleado> empleados =
+                    await this.repo.GetEmpleadosSessionAsync(idsEmpleados);
+                return View(empleados);
+            }
+        }
+    
+        public IActionResult ListaFavoritos()
+        {
+            return View();
         }
     }
 }

@@ -1,0 +1,68 @@
+﻿@model List<Empleado>
+
+@{
+    // Necesitamos Session en la vista para comprobar sus datos
+    List<int> idsEmpleados = Context.Session.GetObject<List<int>>("idsempleadosv5");
+    List<Empleado> favEmpleados = memoryCache.Get<List<Empleado>>("favoritos");
+}
+
+<div class="container">
+    <h2 class="text-info">Session Empleados V5</h2>
+
+
+
+    @if (idsEmpleados != null)
+    {
+        <p>Nº de Empleados: @idsEmpleados.Count</p>
+    }
+    @if (favEmpleados != null)
+    {
+        <p>Nº de Favoritos: @favEmpleados.Count</p>
+    }
+
+
+    @if (Model != null && Model.Count != 0)
+    {
+        <table class="table table-primary table-bordered">
+            <thead>
+                <tr>
+                    <th>Apellido</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Empleado empleado in Model)
+                {
+                    <tr>
+                        <td>@empleado.Apellido</td>
+                        @*Preguntamos si existe el empleado en Session*@
+                        <td>
+                            @if (idsEmpleados == null)
+                            {
+
+                                <a class="btn btn-success" asp-action="SessionEmpleadosV5" asp-route-idempleado="@empleado.IdEmpleado">Almacenar</a>
+
+                            }
+                            else
+                            {
+                                if (idsEmpleados.Contains(empleado.IdEmpleado))
+                                {
+                                    <img src="~/images/ok.png" style="width:50px" />
+                                }
+                                else
+                                {
+                                    <a class="btn btn-success" asp-action="SessionEmpleadosV5" asp-route-idempleado="@empleado.IdEmpleado">Almacenar</a>
+                                }
+                            }
+                            <a class="btn btn-danger text-white" asp-action="SessionEmpleadosV5" asp-route-idfavorito="@empleado.IdEmpleado">Favorito</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+<div class="container">
+    <a asp-action="ListaEmpleadosV5">Mostrar Lista por IDs Almacenada</a><br />
+    <a asp-action="ListaFavoritos">Mostrar Lista de Favoritos</a>
+</div>

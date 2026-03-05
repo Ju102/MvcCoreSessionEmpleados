@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@{
+    List<int> idsEmpleados = Context.Session.GetObject<List<int>>("idsempleadosv5");
+    List<Empleado> favEmpleados = memoryCache.Get<List<Empleado>>("favoritos");
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -29,6 +34,18 @@
                     </ul>
                 </div>
             </div>
+            @if (idsEmpleados != null)
+            {
+                <div class="bg-primary-subtle d-flex w-auto">
+                    <p>Nº Empleados: @idsEmpleados.Count</p>
+                </div>
+            }
+            @if (favEmpleados != null)
+            {
+                <div class="bg-danger-subtle d-flex w-auto">
+                    <p>Nº Favoritos: @favEmpleados.Count</p>
+                </div>
+            }
         </nav>
     </header>
     <div class="container">

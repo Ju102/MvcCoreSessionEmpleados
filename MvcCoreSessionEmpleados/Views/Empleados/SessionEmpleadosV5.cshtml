@@ -54,7 +54,24 @@
                                     <a class="btn btn-success" asp-action="SessionEmpleadosV5" asp-route-idempleado="@empleado.IdEmpleado">Almacenar</a>
                                 }
                             }
-                            <a class="btn btn-danger text-white" asp-action="SessionEmpleadosV5" asp-route-idfavorito="@empleado.IdEmpleado">Favorito</a>
+                            @if (favEmpleados == null)
+                            {
+                                <a class="btn btn-danger text-white" asp-action="SessionEmpleadosV5" asp-route-idfavorito="@empleado.IdEmpleado">Favorito</a>
+                            }
+                            else
+                            {
+                                Empleado empFavorito = favEmpleados.Find(e => e.IdEmpleado == empleado.IdEmpleado);
+
+                                if (empFavorito != null)
+                                {
+                                    <img src="~/images/favok.png" style="width:50px" />
+                                }
+                                else
+                                {
+                                    <a class="btn btn-danger text-white" asp-action="SessionEmpleadosV5" asp-route-idfavorito="@empleado.IdEmpleado">Favorito</a>
+                                }
+                            }
+
                         </td>
                     </tr>
                 }
